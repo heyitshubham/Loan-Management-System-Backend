@@ -1,0 +1,483 @@
+{
+	"info": {
+		"_postman_id": "12345678-1234-1234-1234-123456789012",
+		"name": "Loan Management System API",
+		"description": "Complete API collection for the Loan Management System with JWT authentication and role-based access control.\n\n**Setup Instructions:**\n1. Set the `apiUrl` variable to your server URL (default: http://localhost:8080)\n2. Login with admin or user credentials\n3. The JWT token will be automatically set for subsequent requests\n\n**Test Users:**\n- Admin: `twinline` / `Admin@123`\n- User 1: `shubham` / `Shubham@123`\n- User 2: `test` / `Test@123`",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Login - Admin",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.success && responseJson.data && responseJson.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', responseJson.data.token);",
+									"        pm.collectionVariables.set('current_user', responseJson.data.username);",
+									"        pm.collectionVariables.set('user_role', responseJson.data.role || 'USER');",
+									"        console.log('JWT Token saved:', responseJson.data.token);",
+									"        console.log('User role:', responseJson.data.role || 'USER');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"twinline\",\n  \"password\": \"Admin@123\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/api/auth/login",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with admin credentials to get JWT token with ADMIN role"
+					},
+					"response": []
+				},
+				{
+					"name": "Login - Regular User",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.success && responseJson.data && responseJson.data.token) {",
+									"        pm.collectionVariables.set('jwt_token', responseJson.data.token);",
+									"        pm.collectionVariables.set('current_user', responseJson.data.username);",
+									"        pm.collectionVariables.set('user_role', responseJson.data.role || 'USER');",
+									"        console.log('JWT Token saved:', responseJson.data.token);",
+									"        console.log('User role:', responseJson.data.role || 'USER');",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"shubham\",\n  \"password\": \"Shubham@123\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/api/auth/login",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "Login with regular user credentials to get JWT token with USER role"
+					},
+					"response": []
+				},
+				{
+					"name": "Register New User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"newuser\",\n  \"password\": \"NewUser@123\",\n  \"fullName\": \"New User\",\n  \"email\": \"newuser@example.com\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/api/auth/register",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						},
+						"description": "Register a new user (will have USER role by default)"
+					},
+					"response": []
+				}
+			],
+			"description": "Authentication endpoints for login and registration"
+		},
+		{
+			"name": "Loan Applications",
+			"item": [
+				{
+					"name": "Get My Applications",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/api/loans/my-applications",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"loans",
+								"my-applications"
+							]
+						},
+						"description": "Get loan applications for the currently logged-in user"
+					},
+					"response": []
+				},
+				{
+					"name": "Get All Applications (Admin Only)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/api/loans/all",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"loans",
+								"all"
+							]
+						},
+						"description": "Get all loan applications from all users. **Requires ADMIN role**"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Application by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/api/loans/{{loan_id}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"loans",
+								"{{loan_id}}"
+							]
+						},
+						"description": "Get a specific loan application by ID"
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Loan Application",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    const responseJson = pm.response.json();",
+									"    if (responseJson.success && responseJson.data && responseJson.data.id) {",
+									"        pm.collectionVariables.set('loan_id', responseJson.data.id);",
+									"        console.log('Loan ID saved:', responseJson.data.id);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"applicantName\": \"John Doe\",\n  \"loanAmount\": 50000.0,\n  \"tenure\": 24,\n  \"income\": 75000.0,\n  \"contactDetails\": \"Phone: +1-555-123-4567\\nEmail: john.doe@email.com\\nAddress: 123 Main Street, Springfield, IL 62701\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/api/loans/apply",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"loans",
+								"apply"
+							]
+						},
+						"description": "Submit a new loan application. The loan ID will be automatically saved for use in other requests."
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing loan applications"
+		},
+		{
+			"name": "Approval Workflow",
+			"item": [
+				{
+					"name": "Get Approval Steps",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/api/approval/{{loan_id}}/steps",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"approval",
+								"{{loan_id}}",
+								"steps"
+							]
+						},
+						"description": "Get all approval steps for a loan application"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Step - Query Params (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							}
+						],
+						"url": {
+							"raw": "{{apiUrl}}/api/approval/update-step?stepId={{step_id}}&status=APPROVED&comments=Initial review completed successfully",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"approval",
+								"update-step"
+							],
+							"query": [
+								{
+									"key": "stepId",
+									"value": "{{step_id}}"
+								},
+								{
+									"key": "status",
+									"value": "APPROVED"
+								},
+								{
+									"key": "comments",
+									"value": "Initial review completed successfully"
+								}
+							]
+						},
+						"description": "Update approval step using query parameters. **Requires ADMIN role**"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Step - JSON Body (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"APPROVED\",\n  \"comments\": \"Document verification completed successfully\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/api/approval/step/{{step_id}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"approval",
+								"step",
+								"{{step_id}}"
+							]
+						},
+						"description": "Update approval step using JSON body. **Requires ADMIN role**"
+					},
+					"response": []
+				},
+				{
+					"name": "Reject Step (Admin Only)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{jwt_token}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"status\": \"REJECTED\",\n  \"comments\": \"Insufficient documentation provided. Please submit additional income verification.\"\n}"
+						},
+						"url": {
+							"raw": "{{apiUrl}}/api/approval/step/{{step_id}}",
+							"host": [
+								"{{apiUrl}}"
+							],
+							"path": [
+								"api",
+								"approval",
+								"step",
+								"{{step_id}}"
+							]
+						},
+						"description": "Reject an approval step with comments. **Requires ADMIN role**"
+					},
+					"response": []
+				}
+			],
+			"description": "Endpoints for managing the approval workflow (Admin only)"
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Auto-set variables if not already set",
+					"if (!pm.collectionVariables.get('apiUrl')) {",
+					"    pm.collectionVariables.set('apiUrl', 'http://localhost:8080');",
+					"}",
+					"",
+					"// Log current user info",
+					"const currentUser = pm.collectionVariables.get('current_user');",
+					"const userRole = pm.collectionVariables.get('user_role');",
+					"if (currentUser) {",
+					"    console.log(`Current user: ${currentUser} (${userRole})`);",
+					"}"
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"// Global test for all requests",
+					"pm.test('Response time is less than 5000ms', function () {",
+					"    pm.expect(pm.response.responseTime).to.be.below(5000);",
+					"});",
+					"",
+					"// Log response for debugging",
+					"if (pm.response.code >= 400) {",
+					"    console.log('Error Response:', pm.response.json());",
+					"}"
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "jwt_token",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "current_user",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "user_role",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "loan_id",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "step_id",
+			"value": "",
+			"type": "string"
+		}
+	]
+}
